@@ -1,5 +1,6 @@
 import mysql.connector
 from datetime import datetime 
+import random
 
 """Connecting to database"""
 
@@ -95,8 +96,34 @@ questions = [
     }
         ]
 
-insert_questions = ("""INSERT INTO questions (question, answer, category) 
-                        VALUES (%(question)s, %(answer)s, %(category)s)""")
-mycursor.executemany(insert_questions, questions)
+# insert_questions = ("""INSERT INTO questions (question, answer, category) 
+#                         VALUES (%(question)s, %(answer)s, %(category)s)""")
+# mycursor.executemany(insert_questions, questions)
 # mydb.commit()
 
+
+"""Step 3: creating our flashcard loop"""
+
+mycursor.execute('SELECT * FROM questions')
+questions_list = mycursor.fetchall()
+
+
+#the flashcard loop below works!!
+random.shuffle(questions_list) #randomizing our questions
+question_number = 0
+
+
+while question_number < len(questions_list):                                    #if our question number is less than how many questions we have
+    print(f"Question {question_number + 1}: {questions_list[question_number][1]}")  #print our questions_list using dictionary slicing
+    user_answer = str(input("What's the answer to the question above? "))
+
+    if user_answer == 'quit':
+        print("Session Over")
+        break
+    
+    elif user_answer == questions_list[question_number][2]:                       #if user_answer is equal to the answer to it's respective question
+        print("Correct!")
+        question_number += 1                                                    #continue to the next question
+
+    else:
+        print("Incorrect. Please try again.")
