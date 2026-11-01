@@ -29,27 +29,27 @@ mycursor = mydb.cursor()
 #I ended up fixing this problem by making the history table contain timestamps and having the progress table to see if the user is on a streak, if they mastered said question, and to see the statistics of how well a user is performing for each question.
 
 
-mycursor.execute("""CREATE TABLE IF NOT EXISTS questions (
-                    question_id INT PRIMARY KEY AUTO_INCREMENT,
-                    question VARCHAR(128),
-                    answer VARCHAR(128),
-                    category VARCHAR(32)
-                    )""")
+# mycursor.execute("""CREATE TABLE IF NOT EXISTS questions (
+#                     question_id INT PRIMARY KEY AUTO_INCREMENT,
+#                     question VARCHAR(128),
+#                     answer VARCHAR(128),
+#                     category VARCHAR(32)
+#                     )""")
 
-mycursor.execute("""CREATE TABLE IF NOT EXISTS history (
-                    attempt_id INT PRIMARY KEY AUTO_INCREMENT, 
-                    question_id INT, 
-                    attempt_time TIMESTAMP NOT NULL, 
-                    attempt_result VARCHAR(16), 
-                    FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
+# mycursor.execute("""CREATE TABLE IF NOT EXISTS history (
+#                     attempt_id INT PRIMARY KEY AUTO_INCREMENT, 
+#                     question_id INT, 
+#                     attempt_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+#                     correct VARCHAR(16), 
+#                     FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
 
-mycursor.execute("""CREATE TABLE IF NOT EXISTS progress (
-                    question_id INT,
-                    attempts INT,
-                    correct_count INT,
-                    streak INT,
-                    mastery bool,
-                    FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
+# mycursor.execute("""CREATE TABLE IF NOT EXISTS progress (
+#                     question_id INT,
+#                     attempts INT,
+#                     correct_count INT,
+#                     streak INT,
+#                     mastery bool,
+#                     FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
 
 
 
@@ -88,12 +88,11 @@ questions = [
     }
         ]
 
+#Inserting questions into the database. I commented this out because I only want to insert the questions once, and not every time I run the program
 # insert_questions = ("""INSERT INTO questions (question, answer, category) 
 #                         VALUES (%(question)s, %(answer)s, %(category)s)""")
 # mycursor.executemany(insert_questions, questions)
 
-insert_history = ("""INSERT INTO history (question_id, attempt_result) 
-                     VALUES (%(question_id)s, %(attempt_result)s)""")
 
 """Step 3: creating functions"""
 
@@ -104,8 +103,14 @@ def get_questions():
 
 
 
+def insert_history(question_id, attempt_result):
+    data = {
+        "question_id": question_id,
+        "correct": attempt_result
+    }
+    mycursor.execute("""INSERT INTO history (question_id, correct) 
+                     VALUES (%(question_id)s, %(correct)s)""", data)
 
-
-#current task: create a function to keep track of user history and insert that data into our history table
-
-
+    mydb.commit()
+    
+    

@@ -1,11 +1,11 @@
 import random
+from database import insert_history
 """This file contains the code for the flashcard loop"""
 
 
 def study_session(questions):
     random.shuffle(questions) #randomizing our questions
     question_number = 0
-
 
     while question_number < len(questions):                                       #if our question number is less than how many questions we have
         print(f"Question {question_number + 1}: {questions[question_number][1]}") #print our questions_list using dictionary slicing
@@ -15,11 +15,16 @@ def study_session(questions):
             print("Session Over")
             break
         
-        #feature idea: if user_answer == 'reveal', print the answer
+        #feature idea: if user_answer == 'reveal', print the answer, count as incorrect and move on to next question
         
         elif user_answer == questions[question_number][2]:                        #if user_answer is equal to the answer to it's respective question
             print("Correct!\n")
-            question_number += 1                                                  #continue to the next question
+            
+            insert_history(questions[question_number][0], "Y")
+            question_number += 1  
+
 
         else:
             print("Incorrect. Please try again.\n")
+            
+            insert_history(questions[question_number][0], "N")
