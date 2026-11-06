@@ -119,8 +119,20 @@ def statistics(): # number of questions, correct, incorrect, accuracy, then once
     table = mycursor.fetchall()
     for row in table:
         print(f'Question_ID {row[0]}: {row[1]} attempts, {row[2]} correct attempts, {(row[2] / row[1]) * 100:.2f}% accuracy')        
+    print()
+    
+    mycursor.execute("""SELECT COUNT(attempt_id) AS attempts FROM history""")
+    total_attempts = mycursor.fetchone()[0] #grab sum of rows with a value in the first column
+    mycursor.execute("""SELECT COUNT(correct) FROM history WHERE correct = 'Y'""")
+    correct = mycursor.fetchone()[0]
+    incorrect = total_attempts - correct
+    overall_accuracy = (correct / total_attempts) * 100
     
     
+    print(f'Total Attempts: {total_attempts}')
+    print(f'Total Correct: {correct}')
+    print(f'Total Incorrect: {incorrect}')
+    print(f'Overall Accuracy: {overall_accuracy:.2f}%')
     
     
 def truncate_history():
