@@ -1,5 +1,7 @@
 import random
 from database import insert_history
+from database import statistics
+from database import truncate_history
 """This file contains the code for the flashcard loop"""
 
 
@@ -13,6 +15,8 @@ def study_session(questions):
 
         if user_answer == 'quit':
             print("Session Over")
+            statistics() #call statistics function to print out the statistics of the session
+            truncate_history()
             break
         
         #feature idea: if user_answer == 'reveal', print the answer, count as incorrect and move on to next question
@@ -26,5 +30,4 @@ def study_session(questions):
 
         else:
             print("Incorrect. Please try again.\n")
-            
             insert_history(questions[question_number][0], "N")

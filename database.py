@@ -104,13 +104,28 @@ def get_questions():
 
 
 def insert_history(question_id, attempt_result):
-    data = {
-        "question_id": question_id,
-        "correct": attempt_result
-    }
     mycursor.execute("""INSERT INTO history (question_id, correct) 
-                     VALUES (%(question_id)s, %(correct)s)""", data)
-
+                     VALUES (%s, %s)""", (question_id, attempt_result))
     mydb.commit()
     
     
+def statistics(): # number of questions, correct, incorrect, accuracy, then once session is over trunctate the table
+    
+    mycursor.execute("""SELECT COUNT(attempt_id) FROM history""") #count numbers of attempts from history table 
+    total_attempts = mycursor.fetchone()[0] #grab sum of rows with a value in the first column
+    
+    mycursor.execute("""SELECT COUNT(correct) FROM history WHERE correct = 'Y' """)
+    correct = mycursor.fetchone()[0]
+    
+    incorrect = total_attempts - correct
+    overall_accuracy = (correct / total_attempts) * 100
+    
+    
+    print(f'Total Attempts: {total_attempts}')
+    print(f'Total Correct: {correct}')
+    print(f'Total Incorrect: {incorrect}')
+    print(f'Overall Accuracy: {overall_accuracy:.2f}%')
+    
+    
+def truncate_history():
+    mycursor.execute("""TRUNCATE TABLE history""")
