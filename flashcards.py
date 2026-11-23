@@ -15,7 +15,7 @@ def menu():
                             \n2. Create New Flashcard
                             \n3. View Statistics
                             \n4. Exit\n""")
-
+        print("\n")
         if user_option == '1':
             study_session(get_questions())
         elif user_option == '2':
@@ -26,7 +26,7 @@ def menu():
             print("Exiting the program.")
             break
         else:
-            print("Invalid option. Please try again.")   
+            print("Invalid option. Please try again.")
         
 
 def study_session(questions):
@@ -35,8 +35,21 @@ def study_session(questions):
 
     while question_number < len(questions):                                       #if our question number is less than how many questions we have
         print(f"Question {question_number + 1}: {questions[question_number][1]}") #print our questions_list using dictionary slicing
-        user_answer = input("What's the answer to the question above? ")
+        #print correct answer
+        print(questions[question_number][2])
         
+        #print random incorrect answer
+        answers = []
+        for question in questions:
+            answers.append(question[2])
+            
+        for i in random.sample(answers,k=3): #Pull random answers from the list of answers except for the correct answer (k=3 means pull 3 random answers from the list)
+            if i != questions[question_number][2]:
+                print(i)
+        
+        
+        
+        user_answer = input("Enter Answer: ")
         if user_answer.strip().lower() == questions[question_number][2].strip().lower():                        #if user_answer is equal to the answer to it's respective question
             print("Correct!\n")
             insert_history(questions[question_number][0], "Y")
