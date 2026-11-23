@@ -1,5 +1,4 @@
 import mysql.connector
-import random
 """This file contains the code for our database statements"""
 
 mydb = mysql.connector.connect(
@@ -22,7 +21,6 @@ mycursor = mydb.cursor()
 
 """The 'questions' table consists of id, question, answer """
 """The 'history' table consists of id, attempt time, and attempt result"""
-"""the 'progress' table is keeping track of how many attempts each question got, correct streak, mastery (3 correct in a row)"""
 
 #At first I did not know what kind of database design I was going for. I knew I wanted a 'questions' table, but 
 #I was confusing a progress table with a history table. At first I had a session table, but I couldn't find a reason why i would need one when i have a history table.
@@ -43,59 +41,6 @@ mycursor = mydb.cursor()
 #                     correct VARCHAR(16), 
 #                     FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
 
-# mycursor.execute("""CREATE TABLE IF NOT EXISTS progress (
-#                     question_id INT,
-#                     attempts INT,
-#                     correct_count INT,
-#                     streak INT,
-#                     mastery bool,
-#                     FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
-
-
-
-"""Step 2: populate tables with values"""
-#Use a list of dictionaries instead of a list of tuples since it is easier to implement new features later on
-#NOTE: the tables automatically assign question ID's to each question
-questions = [
-    {
-        "question": "What is 2 + 2?",
-        "answer": "4",
-        "category": "Math"
-    },
-    
-    {
-        "question": "What is 3 x 5?",
-        "answer": "15",
-        "category": "Math"
-    },
-
-    {
-        "question": "What is 10 / 2?",
-        "answer": "5",
-        "category": "Math"
-    },
-    
-    {
-        "question": "What is 11 - 9?",
-        "answer": "2",
-        "category": "Math"
-    },
-    
-    {
-        "question": "What is 9^2?",
-        "answer": "81",
-        "category": "Math"
-    }
-        ]
-
-#Inserting questions into the database. I commented this out because I only want to insert the questions once, and not every time I run the program
-# insert_questions = ("""INSERT INTO questions (question, answer, category) 
-#                         VALUES (%(question)s, %(answer)s, %(category)s)""")
-# mycursor.executemany(insert_questions, questions)
-
-
-"""Step 3: creating functions"""
-
 
 def get_questions():
     mycursor.execute('SELECT * FROM questions')
@@ -110,6 +55,7 @@ def insert_history(question_id, attempt_result):
     
     
 def statistics(): # number of questions, correct, incorrect, accuracy, then once session is over trunctate the table
+    print("\n===== Per Question Statistics =====")
     mycursor.execute("""
                 SELECT question_id, COUNT(*) AS attempts,
                 SUM(correct = 'Y') AS correct_attempts
@@ -119,30 +65,39 @@ def statistics(): # number of questions, correct, incorrect, accuracy, then once
     table = mycursor.fetchall()
     for row in table:
         print(f'Question_ID {row[0]}: {row[1]} attempts, {row[2]} correct attempts, {(row[2] / row[1]) * 100:.2f}% accuracy')        
-    print()
     
+    """Above is the statistics for each question, below is the overall statistics for the session"""
+
     mycursor.execute("""SELECT COUNT(attempt_id) AS attempts FROM history""")
     total_attempts = mycursor.fetchone()[0] #grab sum of rows with a value in the first column
+    
     mycursor.execute("""SELECT COUNT(correct) FROM history WHERE correct = 'Y'""")
     correct = mycursor.fetchone()[0]
     incorrect = total_attempts - correct
-    overall_accuracy = (correct / total_attempts) * 100
     
-    
+    if total_attempts > 0:
+        overall_accuracy = (correct / total_attempts) * 100
+    else:
+        overall_accuracy = 0  
+          
+    print("\n===== Overall Statistics =====")
     print(f'Total Attempts: {total_attempts}')
     print(f'Total Correct: {correct}')
     print(f'Total Incorrect: {incorrect}')
     print(f'Overall Accuracy: {overall_accuracy:.2f}%')
     
-    
+
+
 def truncate_history():
     mycursor.execute("""TRUNCATE TABLE history""")
+    mydb.commit()
     
     
-def create_user(username, password_hash): #creating a username and password
-    mycursor.execute("""
-        INSERT INTO users (username, password_hash)
-        VALUES (%s, %s)
-    """, (username, password_hash))
-
+def create_flashcard():
+    question = input("Enter a question: ")
+    answer = input("Enter the answer: ")
+    category = input("Enter the category: ")
+    
+    mycursor.execute("""INSERT INTO questions (question, answer, category) 
+                     VALUES (%s, %s, %s)""", (question, answer, category))
     mydb.commit()
