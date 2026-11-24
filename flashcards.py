@@ -4,6 +4,7 @@ from database import statistics
 # from database import truncate_history
 from database import get_questions 
 from database import create_flashcard
+from database import select_categories
 
 
 """This file contains the code for the flashcard loop"""
@@ -17,7 +18,25 @@ def menu():
                             \n4. Exit\n""")
         print("\n")
         if user_option == '1':
-            study_session(get_questions())
+            print("Select a category: \n")
+            print("Available categories:")
+            
+            for category in select_categories():
+                print(f"- {category[0]}")  # Clean up the output to show only the category name
+            
+            # Fetch distinct categories from the database
+            
+            selected_category = input()
+            questions = get_questions(selected_category) #grab questions based on category
+            
+            if len(questions) == 0:
+                print("No flashcards found for that category.")
+            elif len(questions) < 4:
+                print("You need at least 4 flashcards in this category. Please add more.")
+            else:
+                study_session(questions)
+                        
+            
         elif user_option == '2':
             create_flashcard()
         elif user_option == '3':
@@ -70,5 +89,3 @@ def study_session(questions):
             insert_history(questions[question_number][0], "N")
             
             
-#feature idea, have multiple answers from other questions pop up as options for the user to choose from, and if they choose the correct one, they get a point. If they choose the wrong one, they lose a point. (like kahoot)
-#show statistics based on each category (the user can choose which category they want to see statistics for)

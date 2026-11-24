@@ -42,8 +42,8 @@ mycursor = mydb.cursor()
 #                     FOREIGN KEY(question_id) REFERENCES questions(question_id))""")
 
 
-def get_questions():
-    mycursor.execute('SELECT * FROM questions')
+def get_questions(category):
+    mycursor.execute(f"SELECT * FROM questions WHERE category = '{category}' ")
     return mycursor.fetchall()
 
 
@@ -101,3 +101,10 @@ def create_flashcard():
     mycursor.execute("""INSERT INTO questions (question, answer, category) 
                      VALUES (%s, %s, %s)""", (question, answer, category))
     mydb.commit()
+    
+
+#select categories
+def select_categories():
+    mycursor.execute("SELECT DISTINCT category FROM questions")
+    categories = mycursor.fetchall()
+    return categories
