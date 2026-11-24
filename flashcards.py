@@ -34,23 +34,33 @@ def study_session(questions):
     question_number = 0
 
     while question_number < len(questions):                                       #if our question number is less than how many questions we have
-        print(f"Question {question_number + 1}: {questions[question_number][1]}") #print our questions_list using dictionary slicing
-        #print correct answer
-        print(questions[question_number][2])
+        print(f"Question {question_number + 1}: {questions[question_number][1]}\n") #print our questions_list using dictionary slicing
         
-        #print random incorrect answer
-        answers = []
+        
+        # correct answer
+        correct_answer = questions[question_number][2]
+        
+        #random incorrect answer
+        incorrect_answers = []
         for question in questions:
-            answers.append(question[2])
-            
-        for i in random.sample(answers,k=3): #Pull random answers from the list of answers except for the correct answer (k=3 means pull 3 random answers from the list)
-            if i != questions[question_number][2]:
-                print(i)
+            incorrect_answers.append(question[2])
+        incorrect_answers.remove(correct_answer)
+        
+        #shuffle 3 incorrect answers
+        shuffled_incorrect_answers = random.sample(incorrect_answers, k=3)
+        
+        #randomize order of correct and incorrect answers
+        answer_choices = [correct_answer] + shuffled_incorrect_answers
+        random.shuffle(answer_choices)
+        
+        #display answer choices
+        print(answer_choices)
         
         
         
+        #Handle user input
         user_answer = input("Enter Answer: ")
-        if user_answer.strip().lower() == questions[question_number][2].strip().lower():                        #if user_answer is equal to the answer to it's respective question
+        if user_answer.strip().lower() == correct_answer.strip().lower():                        #if user_answer is equal to the answer to it's respective question
             print("Correct!\n")
             insert_history(questions[question_number][0], "Y")
             question_number += 1  
