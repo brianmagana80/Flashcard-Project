@@ -5,15 +5,27 @@ import random
 app = Flask(__name__)
 
 # home page route
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('homepage.html')
+    
+    # creating category list for dropdown menu
+    categories = []
+    for i in select_categories():
+        categories.append(i)
+        
+    # select category
+    if request.method == "POST":
+        # print(request.form["category"])
+        selected_category = request.form["category"]
+        
+    return render_template('homepage.html', categories=select_categories())
 
 # flashcard page route
 @app.route('/study', methods=['GET', 'POST'])
 def study():
+    
     # filter through questions based on category
-    questions = get_questions("Computer Science") #temporarily hard-coded
+    questions = get_questions(select_categories()) #temporarily hard-coded
     question = questions[0][1]
     
     answer_choices = []
@@ -43,8 +55,15 @@ def study():
     
     
     print(question)
-    return render_template('studypage.html', question=question, answer_choices=answer_choices, result=result)
+    return render_template('studypage.html', question=question, answer_choices=answer_choices, result=result, categories=select_categories())
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    
+    
+    
+# cd "C:\Users\brian\OneDrive\Documents\GitHub\Flashcard Project"
+# .\venv\Scripts\activate
+# python -m frontend.app
