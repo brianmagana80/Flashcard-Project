@@ -1,10 +1,10 @@
 import random
-from database import insert_history
-from database import statistics
+from backend.database import insert_history
+from backend.database import statistics
 # from database import truncate_history
-from database import get_questions 
-from database import create_flashcard
-from database import select_categories
+from backend.database import get_questions 
+from backend.database import create_flashcard
+from backend.database import select_categories
 
 
 """This file contains the code for the flashcard loop"""
