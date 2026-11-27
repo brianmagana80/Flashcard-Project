@@ -106,5 +106,7 @@ def create_flashcard():
 #select categories
 def select_categories():
     mycursor.execute("SELECT DISTINCT category FROM questions")
-    categories = mycursor.fetchall()
+    categories = []
+    for i in mycursor.fetchall():
+        categories.append(i[0])
     return categories

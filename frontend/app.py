@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from backend.database import get_questions, select_categories
 import random
 
@@ -15,19 +15,18 @@ def home():
         
     # select category
     if request.method == "POST":
-        # print(request.form["category"])
         selected_category = request.form["category"]
         
+        return redirect(url_for('study', category=selected_category))
     return render_template('homepage.html', categories=select_categories())
 
+
 # flashcard page route
-@app.route('/study', methods=['GET', 'POST'])
-def study():
-    
+@app.route('/study/<category>', methods=['GET', 'POST'])
+def study(category):
+
     # filter through questions based on category
-    questions = get_questions(select_categories()) #temporarily hard-coded
-    question = questions[0][1]
-    
+    questions = get_questions(category)
     answer_choices = []
     correct_answer = questions[0][2]
     
@@ -54,8 +53,7 @@ def study():
     random.shuffle(answer_choices)
     
     
-    print(question)
-    return render_template('studypage.html', question=question, answer_choices=answer_choices, result=result, categories=select_categories())
+    return render_template('studypage.html', questions=questions, answer_choices=answer_choices, result=result, category=category)
 
 
 if __name__ == '__main__':
