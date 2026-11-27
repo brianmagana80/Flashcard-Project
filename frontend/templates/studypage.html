@@ -12,13 +12,14 @@
     <a href="{{ url_for('home') }}">Home</a>
 
     <form method="POST">
-        <h1>{{ questions[0][1] }}</h1>
-
+        <h1>{{ questions[question_index_number][1] }}</h1>
 
     <button type="submit" name="answer" value="{{answer_choices[0]}}">{{answer_choices[0]}}</button>
     <button type="submit" name="answer" value="{{answer_choices[1]}}">{{answer_choices[1]}}</button>
     <button type="submit" name="answer" value="{{answer_choices[2]}}">{{answer_choices[2]}}</button>
     <button type="submit" name="answer" value="{{answer_choices[3]}}">{{answer_choices[3]}}</button>
+
+        <input type="hidden" name="question_number_index" value = "{{question_index_number}}">
     </form>
 
     <h2>{{result}}</h2>
