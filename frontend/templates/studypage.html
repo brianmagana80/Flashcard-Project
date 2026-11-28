@@ -6,13 +6,14 @@
     <title>StudyBuddy</title>
 </head>
 <body>
-    <p>Study page</p>
+    <p>Study page | <a href="{{ url_for('home') }}">Home</a></p>
 
     <p>Click below to go back to the home page</p>
-    <a href="{{ url_for('home') }}">Home</a>
+    
 
+
+    <h1>Question {{question_index_number}}: {{ questions[question_index_number][1] }}</h1>
     <form method="POST">
-    <h1>{{ questions[question_index_number][1] }}</h1>
 
     {% if result %}
         <h2>{{ result }}</h2>
@@ -26,6 +27,5 @@
 
     <input type="hidden" name="question_number_index" value="{{question_index_number}}">
     </form>
-    <p>{{ question_index_number }}</p>
 </body>
 </html>

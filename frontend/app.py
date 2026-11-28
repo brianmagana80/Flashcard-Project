@@ -38,7 +38,6 @@ def study(category):
         # "answer" is the name of the answer buttons in studypage.html. This only exists if an answer button was clicked.
         if "answer" in request.form:
             user_answer = request.form["answer"]
-            
             #correct or incorrect logic
             if user_answer == questions[question_index_number][2]:
                 result = "Correct!"
@@ -52,8 +51,9 @@ def study(category):
     # no questions left, so the quiz is over
     if question_index_number >= len(questions):
         return render_template('finished.html', category=category)
-
-    correct_answer = questions[question_index_number][2]
+    
+    current_question = questions[question_index_number]
+    correct_answer = current_question[2]
     
     answer_choices = [] 
 
