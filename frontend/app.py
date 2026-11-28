@@ -29,25 +29,33 @@ def study(category):
     questions = get_questions(category)
 
     question_index_number = 0
+    result = None
 
     if request.method == "POST":
-        question_index_number = int(request.form["question_number_index"]) + 1
+        # the question that is currently on screen (comes from the hidden input in studypage.html)
+        question_index_number = int(request.form["question_number_index"])
+
+        # "answer" is the name of the answer buttons in studypage.html. This only exists if an answer button was clicked.
+        if "answer" in request.form:
+            user_answer = request.form["answer"]
+            
+            #correct or incorrect logic
+            if user_answer == questions[question_index_number][2]:
+                result = "Correct!"
+            else:
+                result = "Incorrect!"
+
+        # "next" is the name of the Next button in studypage.html. This only exists if the Next button was clicked.
+        elif "next" in request.form:
+            question_index_number += 1
+
+    # no questions left, so the quiz is over
+    if question_index_number >= len(questions):
+        return render_template('finished.html', category=category)
 
     correct_answer = questions[question_index_number][2]
     
-    
-    
-    answer_choices = []
-    # correct or incorrect logic
-    result = None
-    if request.method == "POST":
-        
-        user_answer = request.form["answer"] #"answer" is the name of the button attributes in the studypage.html file. This is how we get the value of the button that was clicked.
-        if user_answer == correct_answer:
-            result = "Correct!"
-        else:
-            result = "Incorrect!"
-        
+    answer_choices = [] 
 
     #random incorrect answer
     incorrect_answers = []
@@ -61,7 +69,6 @@ def study(category):
     #randomize order of correct and incorrect answers
     answer_choices = [correct_answer] + shuffled_incorrect_answers
     random.shuffle(answer_choices)
-    
     
     return render_template('studypage.html', questions=questions, answer_choices=answer_choices, result=result, category=category, question_index_number=question_index_number)
 
